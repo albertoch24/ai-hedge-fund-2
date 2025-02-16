@@ -128,11 +128,21 @@ if st.button("Run Analysis"):
             if 'analyst_signals' in result:
                 st.subheader("🔍 Analyst Signals")
                 
+                # Log analyst signals structure
+                st.write("Debug - Analyst Signals Structure:", result['analyst_signals'])
+                
                 for analyst, signals in result['analyst_signals'].items():
+                    st.write(f"Debug - Processing analyst: {analyst}")
+                    st.write(f"Debug - Signals for {analyst}:", signals)
+                    
                     with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
                         for ticker, signal in signals.items():
-                            signal_type = signal.get('signal', 'UNKNOWN').upper()
-                            confidence = signal.get('confidence', 0.0)
+                            st.write(f"Debug - Processing ticker {ticker} with signal data:", signal)
+                            
+                            try:
+                                signal_type = signal.get('signal', 'UNKNOWN').upper()
+                                confidence = signal.get('confidence', 0.0)
+                                st.write(f"Debug - Extracted signal type: {signal_type}, confidence: {confidence}")
                             
                             # Color coding for signal types
                             signal_color = {
@@ -145,9 +155,13 @@ if st.button("Run Analysis"):
                                 **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
                                 (Confidence: {confidence:.1f}%)
                             """, unsafe_allow_html=True)
+                            except Exception as e:
+                                st.error(f"Error processing signal for {ticker}: {str(e)}")
+                                st.write("Signal data:", signal)
             
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
+        st.write("Full result structure:", result)
         st.error(error_msg)
         update_logs("System", "ALL", error_msg, is_error=True)
     finally:
