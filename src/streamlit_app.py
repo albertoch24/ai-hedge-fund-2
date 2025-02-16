@@ -82,86 +82,86 @@ if st.button("Run Analysis"):
         result = run_hedge_fund(
             tickers=tickers_list,
             start_date=start_date.strftime("%Y-%m-%d"),
-                end_date=end_date.strftime("%Y-%m-%d"),
-                portfolio=portfolio,
-                show_reasoning=show_reasoning,
-                selected_analysts=selected_analysts,
-                model_name=selected_model,
-                model_provider=model_provider
-            )
+            end_date=end_date.strftime("%Y-%m-%d"),
+            portfolio=portfolio,
+            show_reasoning=show_reasoning,
+            selected_analysts=selected_analysts,
+            model_name=selected_model,
+            model_provider=model_provider
+        )
 
-            if 'decisions' in result:
-                st.subheader("📊 Trading Decisions")
-                
-                for ticker, decision in result['decisions'].items():
-                    with st.expander(f"Decision for {ticker}", expanded=True):
-                        cols = st.columns([2, 2, 3, 5])
-                        
-                        # Ticker symbol with larger font
-                        cols[0].markdown(f"<h2 style='margin-bottom:0px'>{ticker}</h2>", unsafe_allow_html=True)
-                        
-                        # Action with color coding and larger font
-                        action = decision['action'].upper()
-                        action_color = {
-                            'BUY': 'green',
-                            'SELL': 'red',
-                            'HOLD': 'orange',
-                            'SHORT': 'red',
-                            'COVER': 'green'
-                        }.get(action, 'white')
-                        cols[1].markdown(f"<h2 style='color: {action_color}; margin-bottom:0px'>{action}</h2>", unsafe_allow_html=True)
-                        
-                        # Quantity and confidence with better formatting
-                        cols[2].markdown(
-                            f"<div style='padding:10px'>"
-                            f"<div style='font-size:1.2em'><b>Quantity:</b> {decision['quantity']}</div>"
-                            f"<div style='font-size:1.2em'><b>Confidence:</b> {decision['confidence']:.1f}%</div>"
+        if 'decisions' in result:
+            st.subheader("📊 Trading Decisions")
+
+            for ticker, decision in result['decisions'].items():
+                with st.expander(f"Decision for {ticker}", expanded=True):
+                    cols = st.columns([2, 2, 3, 5])
+
+                    # Ticker symbol with larger font
+                    cols[0].markdown(f"<h2 style='margin-bottom:0px'>{ticker}</h2>", unsafe_allow_html=True)
+
+                    # Action with color coding and larger font
+                    action = decision['action'].upper()
+                    action_color = {
+                        'BUY': 'green',
+                        'SELL': 'red',
+                        'HOLD': 'orange',
+                        'SHORT': 'red',
+                        'COVER': 'green'
+                    }.get(action, 'white')
+                    cols[1].markdown(f"<h2 style='color: {action_color}; margin-bottom:0px'>{action}</h2>", unsafe_allow_html=True)
+
+                    # Quantity and confidence with better formatting
+                    cols[2].markdown(
+                        f"<div style='padding:10px'>"
+                        f"<div style='font-size:1.2em'><b>Quantity:</b> {decision['quantity']}</div>"
+                        f"<div style='font-size:1.2em'><b>Confidence:</b> {decision['confidence']:.1f}%</div>"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+
+                    # Reasoning with better formatting
+                    if 'reasoning' in decision:
+                        cols[3].markdown(
+                            f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; border-radius:5px'>"
+                            f"<i>{decision['reasoning']}</i>"
                             f"</div>",
                             unsafe_allow_html=True
                         )
-                        
-                        # Reasoning with better formatting
-                        if 'reasoning' in decision:
-                            cols[3].markdown(
-                                f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; border-radius:5px'>"
-                                f"<i>{decision['reasoning']}</i>"
-                                f"</div>",
-                                unsafe_allow_html=True
-                            )
 
-            if 'analyst_signals' in result:
-                st.subheader("🔍 Analyst Signals")
+        if 'analyst_signals' in result:
+            st.subheader("🔍 Analyst Signals")
 
-                # Log analyst signals structure
-                st.write("Debug - Analyst Signals Structure:", result['analyst_signals'])
+            # Log analyst signals structure
+            st.write("Debug - Analyst Signals Structure:", result['analyst_signals'])
 
-                for analyst, signals in result['analyst_signals'].items():
-                    st.write(f"Debug - Processing analyst: {analyst}")
-                    st.write(f"Debug - Signals for {analyst}:", signals)
+            for analyst, signals in result['analyst_signals'].items():
+                st.write(f"Debug - Processing analyst: {analyst}")
+                st.write(f"Debug - Signals for {analyst}:", signals)
 
-                    with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
-                        for ticker, signal in signals.items():
-                            st.write(f"Debug - Processing ticker {ticker} with signal data:", signal)
+                with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
+                    for ticker, signal in signals.items():
+                        st.write(f"Debug - Processing ticker {ticker} with signal data:", signal)
 
-                            try:
-                                signal_type = signal.get('signal', 'UNKNOWN').upper()
-                                confidence = signal.get('confidence', 0.0)
-                                st.write(f"Debug - Extracted signal type: {signal_type}, confidence: {confidence}")
+                        try:
+                            signal_type = signal.get('signal', 'UNKNOWN').upper()
+                            confidence = signal.get('confidence', 0.0)
+                            st.write(f"Debug - Extracted signal type: {signal_type}, confidence: {confidence}")
 
-                                # Color coding for signal types
-                                signal_color = {
-                                    'BULLISH': 'green',
-                                    'BEARISH': 'red',
-                                    'NEUTRAL': 'orange'
-                                }.get(signal_type, 'white')
+                            # Color coding for signal types
+                            signal_color = {
+                                'BULLISH': 'green',
+                                'BEARISH': 'red',
+                                'NEUTRAL': 'orange'
+                            }.get(signal_type, 'white')
 
-                                st.markdown(f"""
-                                    **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
-                                    (Confidence: {confidence:.1f}%)
+                            st.markdown(f"""
+                                **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
+                                (Confidence: {confidence:.1f}%)
                                 """, unsafe_allow_html=True)
-                            except Exception as e:
-                                st.error(f"Error processing signal for {ticker}: {str(e)}")
-                                st.write("Signal data:", signal)
+                        except Exception as e:
+                            st.error(f"Error processing signal for {ticker}: {str(e)}")
+                            st.write("Signal data:", signal)
 
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
