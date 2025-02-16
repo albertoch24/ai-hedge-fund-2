@@ -197,26 +197,29 @@ def generate_trading_decision(
                 confidence=50.0,
                 reasoning="Default hold position due to insufficient data or analysis"
             )
-        print("\n=== Portfolio Management Analysis ===")
-        print("\nSignals received from agents:")
+        print("\n================ Portfolio Management Analysis ================")
+        print("\n📊 SEGNALI RICEVUTI DAGLI AGENTI:")
         for ticker, signals in signals_by_ticker.items():
-            print(f"\n{ticker}:")
+            print(f"\n🏢 {ticker}:")
             for agent, signal in signals.items():
-                print(f"  {agent}: {signal}")
+                print(f"  👉 {agent}:")
+                print(f"     Signal: {signal.get('signal')}")
+                print(f"     Confidence: {signal.get('confidence')}%")
         
-        print("\nCurrent Market Prices:")
+        print("\n💰 PREZZI CORRENTI:")
         for ticker, price in current_prices.items():
-            print(f"  {ticker}: ${price:.2f}")
+            print(f"  🏢 {ticker}: ${price:,.2f}")
         
-        print("\nMaximum Shares Allowed:")
+        print("\n📈 LIMITI MASSIMI AZIONI:")
         for ticker, shares in max_shares.items():
-            print(f"  {ticker}: {shares} shares")
+            print(f"  🏢 {ticker}: {shares:,} azioni")
         
-        print("\nPortfolio Status:")
-        print(f"  Cash: ${portfolio.get('cash', 0):.2f}")
-        print("  Positions:")
+        print("\n💼 STATO DEL PORTFOLIO:")
+        print(f"  💵 Cash disponibile: ${portfolio.get('cash', 0):,.2f}")
+        print("  📌 Posizioni attuali:")
         for ticker, position in portfolio.get('positions', {}).items():
-            print(f"    {ticker}: {position} shares")
+            print(f"    🏢 {ticker}: {position:,} azioni")
+        print("\n============================================================")
         print("\nDecisions generated:", json.dumps(decisions, indent=2))
         print("=====================================\n")
         return PortfolioManagerOutput(decisions=decisions)
