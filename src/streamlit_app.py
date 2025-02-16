@@ -134,53 +134,6 @@ if st.button("Run Analysis"):
 
         progress.subscribe(progress_callback)
 
-        # Risk Manager Settings
-        st.markdown("---")
-        st.subheader("🛡️ Risk Management Settings")
-        col1, col2 = st.columns(2)
-        with col1:
-            position_limit = st.slider("Position Size Limit (%)", 
-                                    min_value=1, 
-                                    max_value=100, 
-                                    value=20,
-                                    help="Maximum percentage of portfolio for any single position")
-            stop_loss = st.slider("Stop Loss (%)", 
-                                min_value=1, 
-                                max_value=50, 
-                                value=10,
-                                help="Percentage loss at which to trigger stop loss")
-        with col2:
-            max_leverage = st.slider("Maximum Leverage", 
-                                   min_value=1.0, 
-                                   max_value=3.0, 
-                                   value=1.0, 
-                                   step=0.1,
-                                   help="Maximum allowed leverage")
-            risk_tolerance = st.select_slider("Risk Tolerance",
-                                           options=["Low", "Medium", "High"],
-                                           value="Medium")
-
-        # Portfolio Manager Settings
-        st.markdown("---")
-        st.subheader("📊 Portfolio Management Settings")
-        col1, col2 = st.columns(2)
-        with col1:
-            rebalance_threshold = st.slider("Rebalance Threshold (%)", 
-                                          min_value=1, 
-                                          max_value=20, 
-                                          value=5,
-                                          help="Percentage deviation to trigger rebalancing")
-            min_position_size = st.number_input("Minimum Position Size ($)", 
-                                              min_value=100, 
-                                              value=1000)
-        with col2:
-            max_positions = st.slider("Maximum Number of Positions", 
-                                    min_value=1, 
-                                    max_value=20, 
-                                    value=10)
-            position_sizing = st.selectbox("Position Sizing Strategy",
-                                         options=["Equal Weight", "Risk Parity", "Kelly Criterion"])
-
         st.markdown("---")
         st.subheader("Analysis Results")
         result = run_hedge_fund(
