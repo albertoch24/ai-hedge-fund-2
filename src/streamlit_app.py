@@ -58,8 +58,8 @@ if st.button("Run Analysis"):
 
     def update_logs(agent_name, ticker, status, is_error=False):
         timestamp = datetime.now().strftime("%H:%M:%S")
-            color = "🔴" if is_error else "🔵"
-            log_container.markdown(f"{color} **{timestamp}** - {agent_name}: [{ticker}] {status}", unsafe_allow_html=True)
+        color = "🔴" if is_error else "🔵"
+        log_container.markdown(f"{color} **{timestamp}** - {agent_name}: [{ticker}] {status}", unsafe_allow_html=True)
 
     try:
         portfolio = {
