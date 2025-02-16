@@ -52,13 +52,9 @@ for i, (display, value) in enumerate(ANALYST_ORDER):
 # Show reasoning checkbox
 show_reasoning = st.checkbox("Show agent reasoning")
 
-# Create columns for logs and results
-col1, col2 = st.columns([1, 1])
-
 if st.button("Run Analysis"):
-    with col1:
-        st.subheader("Processing Logs")
-        log_container = st.empty()
+    st.subheader("Processing Logs")
+    log_container = st.empty()
 
         def update_logs(agent_name, ticker, status, is_error=False):
             timestamp = datetime.now().strftime("%H:%M:%S")
@@ -81,8 +77,8 @@ if st.button("Run Analysis"):
 
         progress.subscribe(progress_callback)
 
-        with col2:
-            st.subheader("Analysis Results")
+        st.markdown("---")
+        st.subheader("Analysis Results")
             result = run_hedge_fund(
                 tickers=tickers_list,
                 start_date=start_date.strftime("%Y-%m-%d"),
