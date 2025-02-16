@@ -79,9 +79,9 @@ if st.button("Run Analysis"):
 
         st.markdown("---")
         st.subheader("Analysis Results")
-            result = run_hedge_fund(
-                tickers=tickers_list,
-                start_date=start_date.strftime("%Y-%m-%d"),
+        result = run_hedge_fund(
+            tickers=tickers_list,
+            start_date=start_date.strftime("%Y-%m-%d"),
                 end_date=end_date.strftime("%Y-%m-%d"),
                 portfolio=portfolio,
                 show_reasoning=show_reasoning,
