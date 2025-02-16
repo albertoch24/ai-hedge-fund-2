@@ -8,12 +8,12 @@ channel = "stable-24_05"
 run = ["sh", "-c", "npm run start"]
 
 [workflows]
-runButton = "Run"
+runButton = "Streamlit"
 
 [[workflows.workflow]]
-name = "Run"
+name = "Streamlit"
 author = 37071307
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python src/main.py"
+args = "streamlit run src/streamlit_app.py --server.address=0.0.0.0 --server.port=8501"
