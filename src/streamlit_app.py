@@ -333,6 +333,9 @@ def main():
         st.session_state.logs = []
 
 if __name__ == "__main__":
-    main()
     st.set_option('server.address', '0.0.0.0')
     st.set_option('server.port', 8501)
+    st.set_option('server.headless', True)
+    st.set_option('server.enableCORS', False)
+    st.set_option('server.enableWebsocketCompression', False)
+    main()
