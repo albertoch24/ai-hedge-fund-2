@@ -144,8 +144,8 @@ if st.button("Run Analysis"):
                                 confidence = signal.get('confidence', 0.0)
                                 st.write(f"Debug - Extracted signal type: {signal_type}, confidence: {confidence}")
                             
-                            # Color coding for signal types
-                            signal_color = {
+                                # Color coding for signal types
+                                signal_color = {
                                 'BULLISH': 'green',
                                 'BEARISH': 'red',
                                 'NEUTRAL': 'orange'
