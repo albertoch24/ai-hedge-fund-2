@@ -25,15 +25,30 @@ start_date = st.date_input("Start Date", end_date - timedelta(days=90))
 initial_cash = st.number_input("Initial Cash", value=100000.0, step=10000.0)
 margin_requirement = st.number_input("Margin Requirement", value=0.0, step=0.1)
 
+# Model selection
+st.subheader("LLM Model")
+from llm.models import LLM_ORDER, get_model_info
+
+model_options = [(display, value) for display, value, _ in LLM_ORDER]
+selected_model = st.selectbox(
+    "Select LLM model",
+    options=[value for _, value in model_options],
+    format_func=lambda x: next(display for display, value in model_options if value == x)
+)
+
+model_info = get_model_info(selected_model)
+model_provider = model_info.provider.value if model_info else "Unknown"
+
 # Analyst selection
 st.subheader("AI Analysts")
 from utils.analysts import ANALYST_ORDER
 
-# Create checkboxes for all analysts, defaulting to checked
+col1, col2 = st.columns(2)
 selected_analysts = []
-for display, value in ANALYST_ORDER:
-    if st.checkbox(display, value=True, key=value):
-        selected_analysts.append(value)
+for i, (display, value) in enumerate(ANALYST_ORDER):
+    with col1 if i < len(ANALYST_ORDER)/2 else col2:
+        if st.checkbox(display, value=True, key=value):
+            selected_analysts.append(value)
 
 # Show reasoning checkbox
 show_reasoning = st.checkbox("Show agent reasoning")
@@ -75,10 +90,20 @@ if st.button("Run Analysis"):
                 end_date=end_date.strftime("%Y-%m-%d"),
                 portfolio=portfolio,
                 show_reasoning=show_reasoning,
-                selected_analysts=selected_analysts
+                selected_analysts=selected_analysts,
+                model_name=selected_model,
+                model_provider=model_provider
             )
             
-            st.json(result)
+            if 'decisions' in result:
+                st.subheader("Trading Decisions")
+                st.json(result['decisions'])
+                
+            if 'analyst_signals' in result:
+                st.subheader("Analyst Signals")
+                for analyst, signals in result['analyst_signals'].items():
+                    with st.expander(f"{analyst} Analysis"):
+                        st.json(signals)
             
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
