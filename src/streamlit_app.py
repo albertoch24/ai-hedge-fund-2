@@ -3,6 +3,7 @@ import streamlit as st
 import json
 from datetime import datetime, timedelta
 from main import run_hedge_fund
+from utils.progress import progress
 
 st.set_page_config(
     page_title="AI Hedge Fund",
