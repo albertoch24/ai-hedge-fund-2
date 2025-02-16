@@ -25,6 +25,16 @@ start_date = st.date_input("Start Date", end_date - timedelta(days=90))
 initial_cash = st.number_input("Initial Cash", value=100000.0, step=10000.0)
 margin_requirement = st.number_input("Margin Requirement", value=0.0, step=0.1)
 
+# Analyst selection
+st.subheader("AI Analysts")
+from utils.analysts import ANALYST_ORDER
+
+# Create checkboxes for all analysts, defaulting to checked
+selected_analysts = []
+for display, value in ANALYST_ORDER:
+    if st.checkbox(display, value=True, key=value):
+        selected_analysts.append(value)
+
 # Show reasoning checkbox
 show_reasoning = st.checkbox("Show agent reasoning")
 
@@ -64,7 +74,8 @@ if st.button("Run Analysis"):
                 start_date=start_date.strftime("%Y-%m-%d"),
                 end_date=end_date.strftime("%Y-%m-%d"),
                 portfolio=portfolio,
-                show_reasoning=show_reasoning
+                show_reasoning=show_reasoning,
+                selected_analysts=selected_analysts
             )
             
             st.json(result)
