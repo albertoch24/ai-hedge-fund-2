@@ -492,6 +492,30 @@ class Backtester:
 
         return performance_metrics
 
+
+def compare_to_benchmark(self, benchmark_ticker: str = "SPY"):
+    """Compare strategy performance to a benchmark index"""
+    benchmark_prices = get_price_data(
+        benchmark_ticker, 
+        self.start_date,
+        self.end_date
+    )
+    
+    # Calculate benchmark returns
+    benchmark_returns = benchmark_prices["close"].pct_change()
+    strategy_values = pd.DataFrame(self.portfolio_values).set_index("Date")
+    strategy_returns = strategy_values["Portfolio Value"].pct_change()
+    
+    # Calculate excess returns
+    excess_returns = strategy_returns - benchmark_returns
+    
+    # Information ratio
+    info_ratio = excess_returns.mean() / excess_returns.std() * np.sqrt(252)
+    
+    print(f"\nBenchmark Comparison vs {benchmark_ticker}:")
+    print(f"Information Ratio: {info_ratio:.2f}")
+    print(f"Cumulative Excess Return: {excess_returns.sum()*100:.2f}%")
+
     def _update_performance_metrics(self, performance_metrics):
         """Helper method to update performance metrics using daily returns."""
         values_df = pd.DataFrame(self.portfolio_values).set_index("Date")
