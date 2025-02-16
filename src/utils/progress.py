@@ -17,6 +17,25 @@ class AgentProgress:
         self.table = Table(show_header=False, box=None, padding=(0, 1))
         self.live = Live(self.table, console=console, refresh_per_second=4)
         self.started = False
+        self.callbacks = []
+        
+    def subscribe(self, callback):
+        """Subscribe to progress updates."""
+        if callback not in self.callbacks:
+            self.callbacks.append(callback)
+            
+    def unsubscribe(self, callback):
+        """Unsubscribe from progress updates."""
+        if callback in self.callbacks:
+            self.callbacks.remove(callback)
+            
+    def notify_callbacks(self, agent_name: str, ticker: Optional[str], status: str):
+        """Notify all callbacks of progress updates."""
+        for callback in self.callbacks:
+            try:
+                callback(agent_name, ticker, status)
+            except Exception as e:
+                console.print(f"Error in progress callback: {str(e)}", style="red")
 
     def start(self):
         """Start the progress display."""
@@ -41,6 +60,7 @@ class AgentProgress:
             self.agent_status[agent_name]["status"] = status
 
         self._refresh_display()
+        self.notify_callbacks(agent_name, ticker, status)
 
     def _refresh_display(self):
         """Refresh the progress display."""

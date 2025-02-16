@@ -27,7 +27,19 @@ margin_requirement = st.number_input("Margin Requirement", value=0.0, step=0.1)
 # Show reasoning checkbox
 show_reasoning = st.checkbox("Show agent reasoning")
 
+# Create columns for logs and results
+col1, col2 = st.columns([1, 1])
+
 if st.button("Run Analysis"):
+    with col1:
+        st.subheader("Processing Logs")
+        log_container = st.empty()
+        
+        def update_logs(agent_name, ticker, status, is_error=False):
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            color = "🔴" if is_error else "🔵"
+            log_container.markdown(f"{color} **{timestamp}** - {agent_name}: [{ticker}] {status}", unsafe_allow_html=True)
+        
     try:
         portfolio = {
             "cash": initial_cash,
@@ -35,17 +47,33 @@ if st.button("Run Analysis"):
             "positions": {ticker: {"long": 0, "short": 0} for ticker in tickers_list}
         }
         
-        result = run_hedge_fund(
-            tickers=tickers_list,
-            start_date=start_date.strftime("%Y-%m-%d"),
-            end_date=end_date.strftime("%Y-%m-%d"),
-            portfolio=portfolio,
-            show_reasoning=show_reasoning
-        )
+        # Subscribe to progress updates
+        def progress_callback(agent_name, ticker, status):
+            if "error" in status.lower():
+                update_logs(agent_name, ticker, status, is_error=True)
+            else:
+                update_logs(agent_name, ticker, status)
         
-        st.json(result)
+        progress.subscribe(progress_callback)
+        
+        with col2:
+            st.subheader("Analysis Results")
+            result = run_hedge_fund(
+                tickers=tickers_list,
+                start_date=start_date.strftime("%Y-%m-%d"),
+                end_date=end_date.strftime("%Y-%m-%d"),
+                portfolio=portfolio,
+                show_reasoning=show_reasoning
+            )
+            
+            st.json(result)
+            
     except Exception as e:
-        st.error(f"Error: {str(e)}")
+        error_msg = f"Critical Error: {str(e)}"
+        st.error(error_msg)
+        update_logs("System", "ALL", error_msg, is_error=True)
+    finally:
+        progress.unsubscribe(progress_callback)
 
 st.markdown("---")
 st.markdown("⚡ Powered by AI Hedge Fund")
