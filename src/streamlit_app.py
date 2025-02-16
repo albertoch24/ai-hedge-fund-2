@@ -109,15 +109,17 @@ with col2:
                                  options=["Equal Weight", "Risk Parity", "Kelly Criterion"],
                                  key="position_sizing_1")
 
-if st.button("Run Analysis"):
-    st.subheader("Processing Logs")
-    log_container = st.empty()
+# Always show logs section
+st.subheader("Processing Logs")
+log_container = st.empty()
 
-    def update_logs(agent_name, ticker, status, is_error=False):
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        color = "🔴" if is_error else "🔵"
-        log_container.markdown(f"{color} **{timestamp}** - {agent_name}: [{ticker}] {status}", unsafe_allow_html=True)
+def update_logs(agent_name, ticker, status, is_error=False):
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    color = "🔴" if is_error else "🔵"
+    log_container.markdown(f"{color} **{timestamp}** - {agent_name}: [{ticker}] {status}", unsafe_allow_html=True)
 
+# Always show Run Analysis button
+if st.button("Run Analysis", key="run_analysis"):
     try:
         portfolio = {
             "cash": initial_cash,
