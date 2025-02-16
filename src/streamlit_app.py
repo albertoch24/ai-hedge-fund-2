@@ -96,14 +96,55 @@ if st.button("Run Analysis"):
             )
             
             if 'decisions' in result:
-                st.subheader("Trading Decisions")
-                st.json(result['decisions'])
+                st.subheader("📊 Trading Decisions")
+                
+                for ticker, decision in result['decisions'].items():
+                    with st.container():
+                        cols = st.columns([1, 1, 1, 2])
+                        
+                        # Ticker symbol
+                        cols[0].markdown(f"### {ticker}")
+                        
+                        # Action with color coding
+                        action = decision['action'].upper()
+                        action_color = {
+                            'BUY': 'green',
+                            'SELL': 'red',
+                            'HOLD': 'orange',
+                            'SHORT': 'red',
+                            'COVER': 'green'
+                        }.get(action, 'white')
+                        cols[1].markdown(f"<h3 style='color: {action_color}'>{action}</h3>", unsafe_allow_html=True)
+                        
+                        # Quantity and confidence
+                        cols[2].markdown(f"**Quantity:** {decision['quantity']}<br>**Confidence:** {decision['confidence']:.1f}%", unsafe_allow_html=True)
+                        
+                        # Reasoning
+                        if 'reasoning' in decision:
+                            cols[3].markdown(f"*{decision['reasoning']}*")
+                        
+                        st.markdown("---")
                 
             if 'analyst_signals' in result:
-                st.subheader("Analyst Signals")
+                st.subheader("🔍 Analyst Signals")
+                
                 for analyst, signals in result['analyst_signals'].items():
-                    with st.expander(f"{analyst} Analysis"):
-                        st.json(signals)
+                    with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
+                        for ticker, signal in signals.items():
+                            signal_type = signal['signal'].upper()
+                            confidence = signal['confidence']
+                            
+                            # Color coding for signal types
+                            signal_color = {
+                                'BULLISH': 'green',
+                                'BEARISH': 'red',
+                                'NEUTRAL': 'orange'
+                            }.get(signal_type, 'white')
+                            
+                            st.markdown(f"""
+                                **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
+                                (Confidence: {confidence:.1f}%)
+                            """, unsafe_allow_html=True)
             
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
