@@ -32,7 +32,7 @@ def get_prices(ticker: str, start_date: str, end_date: str) -> list[Price]:
     # If not in cache or no data in range, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
+        headers["X-Api-Key"] = api_key
 
     url = f"https://api.financialdatasets.ai/prices/?ticker={ticker}&interval=day&interval_multiplier=1&start_date={start_date}&end_date={end_date}"
     response = requests.get(url, headers=headers)
@@ -69,7 +69,7 @@ def get_financial_metrics(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
+        headers["X-Api-Key"] = api_key
 
     url = f"https://api.financialdatasets.ai/financial-metrics/?ticker={ticker}&report_period_lte={end_date}&limit={limit}&period={period}"
     response = requests.get(url, headers=headers)
@@ -100,7 +100,7 @@ def search_line_items(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
+        headers["X-Api-Key"] = api_key
 
     url = "https://api.financialdatasets.ai/financials/search/line-items"
 
@@ -144,37 +144,37 @@ def get_insider_trades(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
+        headers["X-Api-Key"] = api_key
 
     all_trades = []
     current_end_date = end_date
-    
+
     while True:
         url = f"https://api.financialdatasets.ai/insider-trades/?ticker={ticker}&filing_date_lte={current_end_date}"
         if start_date:
             url += f"&filing_date_gte={start_date}"
         url += f"&limit={limit}"
-        
+
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
             raise Exception(f"Error fetching data: {response.status_code} - {response.text}")
-        
+
         data = response.json()
         response_model = InsiderTradeResponse(**data)
         insider_trades = response_model.insider_trades
-        
+
         if not insider_trades:
             break
-            
+
         all_trades.extend(insider_trades)
-        
+
         # Only continue pagination if we have a start_date and got a full page
         if not start_date or len(insider_trades) < limit:
             break
-            
+
         # Update end_date to the oldest filing date from current batch for next iteration
         current_end_date = min(trade.filing_date for trade in insider_trades).split('T')[0]
-        
+
         # If we've reached or passed the start_date, we can stop
         if current_end_date <= start_date:
             break
@@ -207,37 +207,37 @@ def get_company_news(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
+        headers["X-Api-Key"] = api_key
 
     all_news = []
     current_end_date = end_date
-    
+
     while True:
         url = f"https://api.financialdatasets.ai/news/?ticker={ticker}&end_date={current_end_date}"
         if start_date:
             url += f"&start_date={start_date}"
         url += f"&limit={limit}"
-        
+
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
             raise Exception(f"Error fetching data: {response.status_code} - {response.text}")
-        
+
         data = response.json()
         response_model = CompanyNewsResponse(**data)
         company_news = response_model.news
-        
+
         if not company_news:
             break
-            
+
         all_news.extend(company_news)
-        
+
         # Only continue pagination if we have a start_date and got a full page
         if not start_date or len(company_news) < limit:
             break
-            
+
         # Update end_date to the oldest date from current batch for next iteration
         current_end_date = min(news.date for news in company_news).split('T')[0]
-        
+
         # If we've reached or passed the start_date, we can stop
         if current_end_date <= start_date:
             break
