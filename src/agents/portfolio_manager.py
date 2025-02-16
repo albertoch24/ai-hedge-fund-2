@@ -198,6 +198,10 @@ def generate_trading_decision(
                 reasoning="Default hold position due to insufficient data or analysis"
             )
         print(f"Portfolio decisions generated: {decisions}")
+        print(f"Signals by ticker: {signals_by_ticker}")
+        print(f"Current prices: {current_prices}")
+        print(f"Max shares: {max_shares}")
+        print(f"Portfolio: {portfolio}")
         return PortfolioManagerOutput(decisions=decisions)
 
     return call_llm(prompt=prompt, model_name=model_name, model_provider=model_provider, pydantic_model=PortfolioManagerOutput, agent_name="portfolio_management_agent", default_factory=create_default_portfolio_output)
