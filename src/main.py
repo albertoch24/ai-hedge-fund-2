@@ -146,22 +146,22 @@ if __name__ == "__main__":
         "--initial-cash",
         type=float,
         default=100000.0,
-        help="Initial cash position. Defaults to 100000.0)"
+        help="Initial cash position for trading (default: 100000.0)"
     )
     parser.add_argument(
         "--margin-requirement",
         type=float,
         default=0.0,
-        help="Initial margin requirement. Defaults to 0.0"
+        help="Initial margin requirement for trading (default: 0.0)"
     )
     parser.add_argument("--tickers", type=str, required=True, help="Comma-separated list of stock ticker symbols")
     parser.add_argument(
         "--start-date",
         type=str,
-        help="Start date (YYYY-MM-DD). Defaults to 3 months before end date",
+        help="Start date in YYYY-MM-DD format (default: 3 months before end date)"
     )
-    parser.add_argument("--end-date", type=str, help="End date (YYYY-MM-DD). Defaults to today")
-    parser.add_argument("--show-reasoning", action="store_true", help="Show reasoning from each agent")
+    parser.add_argument("--end-date", type=str, help="End date in YYYY-MM-DD format (default: today)")
+    parser.add_argument("--show-reasoning", action="store_true", help="Show detailed analysis and reasoning from each agent")
     parser.add_argument(
         "--show-agent-graph", action="store_true", help="Show the agent graph"
     )
