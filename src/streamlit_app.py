@@ -1,7 +1,9 @@
 import streamlit as st
 import json
+import pandas as pd
+import plotly.graph_objects as go
 from datetime import datetime, timedelta
-from main import run_hedge_fund #This import might need adjustment depending on the actual location of run_hedge_fund
+from main import run_hedge_fund
 from utils.progress import progress
 
 st.set_page_config(
@@ -129,66 +131,100 @@ if st.button("Run Analysis"):
                             unsafe_allow_html=True
                         )
 
+        tabs = st.tabs(["Analyst Signals", "Portfolio Performance"])
+        # Add performance visualization
+        with tabs[1]:
+            st.subheader("📊 Portfolio Performance")
+            chart_data = pd.DataFrame(result.get('portfolio_values', []))
+            if not chart_data.empty and 'Portfolio Value' in chart_data:
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=chart_data['Date'],
+                    y=chart_data['Portfolio Value'],
+                    mode='lines',
+                    name='Portfolio Value',
+                    line=dict(color='#00ff00', width=2)
+                ))
+                fig.update_layout(
+                    title='Portfolio Value Over Time',
+                    xaxis_title='Date',
+                    yaxis_title='Value ($)',
+                    template='plotly_dark',
+                    height=500
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+                # Add key metrics
+                col1, col2, col3 = st.columns(3)
+                initial_value = chart_data['Portfolio Value'].iloc[0]
+                final_value = chart_data['Portfolio Value'].iloc[-1]
+                total_return = ((final_value - initial_value) / initial_value) * 100
+
+                col1.metric("Total Return", f"{total_return:.2f}%")
+                col2.metric("Peak Value", f"${chart_data['Portfolio Value'].max():,.2f}")
+                col3.metric("Current Value", f"${final_value:,.2f}")
+
         if 'analyst_signals' in result:
-            st.subheader("🔍 Analyst Signals")
-            
-            for analyst, signals in result['analyst_signals'].items():
-                analyst_name = analyst.replace('_agent', '').title()
-                with st.expander(f"📈 {analyst_name} Analysis", expanded=True):
-                    for ticker, signal in signals.items():
-                        try:
-                            signal_type = signal.get('signal', 'UNKNOWN').upper()
-                            confidence = signal.get('confidence', 0.0)
-                            
-                            # Color coding for signal types
-                            signal_color = {
-                                'BULLISH': 'green',
-                                'BEARISH': 'red',
-                                'NEUTRAL': 'orange'
-                            }.get(signal_type, 'gray')
-                            
-                            # Create a container for each signal
-                            with st.container():
-                                cols = st.columns([2, 2, 3, 5])
-                                
-                                # Ticker symbol
-                                cols[0].markdown(f"<h3 style='margin:0'>{ticker}</h3>", unsafe_allow_html=True)
-                                
-                                # Signal type with color
-                                cols[1].markdown(
-                                    f"<h3 style='margin:0; color:{signal_color}'>{signal_type}</h3>",
-                                    unsafe_allow_html=True
-                                )
-                                
-                                # Confidence with progress bar
-                                cols[2].markdown("<div style='padding:10px'>", unsafe_allow_html=True)
-                                cols[2].progress(int(confidence))
-                                cols[2].markdown(f"<div style='text-align:center'>{confidence:.1f}%</div>", unsafe_allow_html=True)
-                                
-                                # Reasoning (if available)
-                                if 'reasoning' in signal:
-                                    reasoning = signal['reasoning']
-                                    if isinstance(reasoning, dict):
-                                        for key, value in reasoning.items():
-                                            if isinstance(value, dict):
-                                                cols[3].markdown(
-                                                    f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
-                                                    f"<b>{key.replace('_', ' ').title()}:</b> {value.get('details', '')}"
-                                                    f"</div>",
-                                                    unsafe_allow_html=True
-                                                )
-                                    else:
-                                        cols[3].markdown(
-                                            f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
-                                            f"{reasoning}"
-                                            f"</div>",
-                                            unsafe_allow_html=True
-                                        )
-                                
-                                st.markdown("<hr style='margin: 10px 0'>", unsafe_allow_html=True)
-                        except Exception as e:
-                            st.error(f"Error processing signal for {ticker}: {str(e)}")
-                            st.write("Signal data:", signal)
+            with tabs[0]:
+                st.subheader("🔍 Analyst Signals")
+
+                for analyst, signals in result['analyst_signals'].items():
+                    analyst_name = analyst.replace('_agent', '').title()
+                    with st.expander(f"📈 {analyst_name} Analysis", expanded=True):
+                        for ticker, signal in signals.items():
+                            try:
+                                signal_type = signal.get('signal', 'UNKNOWN').upper()
+                                confidence = signal.get('confidence', 0.0)
+
+                                # Color coding for signal types
+                                signal_color = {
+                                    'BULLISH': 'green',
+                                    'BEARISH': 'red',
+                                    'NEUTRAL': 'orange'
+                                }.get(signal_type, 'gray')
+
+                                # Create a container for each signal
+                                with st.container():
+                                    cols = st.columns([2, 2, 3, 5])
+
+                                    # Ticker symbol
+                                    cols[0].markdown(f"<h3 style='margin:0'>{ticker}</h3>", unsafe_allow_html=True)
+
+                                    # Signal type with color
+                                    cols[1].markdown(
+                                        f"<h3 style='margin:0; color:{signal_color}'>{signal_type}</h3>",
+                                        unsafe_allow_html=True
+                                    )
+
+                                    # Confidence with progress bar
+                                    cols[2].markdown("<div style='padding:10px'>", unsafe_allow_html=True)
+                                    cols[2].progress(int(confidence))
+                                    cols[2].markdown(f"<div style='text-align:center'>{confidence:.1f}%</div>", unsafe_allow_html=True)
+
+                                    # Reasoning (if available)
+                                    if 'reasoning' in signal:
+                                        reasoning = signal['reasoning']
+                                        if isinstance(reasoning, dict):
+                                            for key, value in reasoning.items():
+                                                if isinstance(value, dict):
+                                                    cols[3].markdown(
+                                                        f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
+                                                        f"<b>{key.replace('_', ' ').title()}:</b> {value.get('details', '')}"
+                                                        f"</div>",
+                                                        unsafe_allow_html=True
+                                                    )
+                                        else:
+                                            cols[3].markdown(
+                                                f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
+                                                f"{reasoning}"
+                                                f"</div>",
+                                                unsafe_allow_html=True
+                                            )
+
+                                    st.markdown("<hr style='margin: 10px 0'>", unsafe_allow_html=True)
+                            except Exception as e:
+                                st.error(f"Error processing signal for {ticker}: {str(e)}")
+                                st.write("Signal data:", signal)
 
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
