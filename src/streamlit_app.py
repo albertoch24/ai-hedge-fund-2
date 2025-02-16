@@ -146,15 +146,15 @@ if st.button("Run Analysis"):
                             
                                 # Color coding for signal types
                                 signal_color = {
-                                'BULLISH': 'green',
-                                'BEARISH': 'red',
-                                'NEUTRAL': 'orange'
-                            }.get(signal_type, 'white')
+                                    'BULLISH': 'green',
+                                    'BEARISH': 'red',
+                                    'NEUTRAL': 'orange'
+                                }.get(signal_type, 'white')
                             
-                            st.markdown(f"""
-                                **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
-                                (Confidence: {confidence:.1f}%)
-                            """, unsafe_allow_html=True)
+                                st.markdown(f"""
+                                    **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
+                                    (Confidence: {confidence:.1f}%)
+                                """, unsafe_allow_html=True)
                             except Exception as e:
                                 st.error(f"Error processing signal for {ticker}: {str(e)}")
                                 st.write("Signal data:", signal)
