@@ -351,7 +351,6 @@ if st.button("Run Analysis"):
 
     except Exception as e:
         error_msg = f"Critical Error: {str(e)}"
-        st.write("Full result structure:", result)
         st.error(error_msg)
         update_logs("System", "ALL", error_msg, is_error=True)
     finally:
