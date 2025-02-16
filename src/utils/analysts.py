@@ -1,3 +1,4 @@
+
 """Constants and utilities related to analysts configuration."""
 from langgraph.graph import END, StateGraph
 from graph.state import AgentState, start
@@ -17,7 +18,8 @@ ANALYST_ORDER = [
     ("Technical Analyst", "technical_analyst"),
     ("Fundamentals Analyst", "fundamentals_analyst"),
     ("Sentiment Analyst", "sentiment_analyst"),
-
+    ("Valuation Analyst", "valuation_analyst"),
+]
 
 def create_workflow(selected_analysts=None):
     """Create the workflow with selected analysts."""
@@ -58,6 +60,3 @@ def create_workflow(selected_analysts=None):
 
     workflow.set_entry_point("start_node")
     return workflow
-
-    ("Valuation Analyst", "valuation_analyst"),
-]
