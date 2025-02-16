@@ -131,8 +131,8 @@ if st.button("Run Analysis"):
                 for analyst, signals in result['analyst_signals'].items():
                     with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
                         for ticker, signal in signals.items():
-                            signal_type = signal['signal'].upper()
-                            confidence = signal['confidence']
+                            signal_type = signal.get('signal', 'UNKNOWN').upper()
+                            confidence = signal.get('confidence', 0.0)
                             
                             # Color coding for signal types
                             signal_color = {
