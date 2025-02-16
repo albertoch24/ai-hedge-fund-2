@@ -5,7 +5,7 @@ run = "npm run start"
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "npm run start"]
+run = ["sh", "-c", "streamlit run src/streamlit_app.py --server.address=0.0.0.0 --server.port=8501"]
 
 [workflows]
 runButton = "Run"
@@ -16,4 +16,8 @@ author = 37071307
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python src/main.py"
+args = "streamlit run src/streamlit_app.py --server.address=0.0.0.0 --server.port=8501"
+
+[[ports]]
+localPort = 8501
+externalPort = 80

@@ -4,6 +4,12 @@ import json
 from datetime import datetime, timedelta
 from main import run_hedge_fund
 
+st.set_page_config(
+    page_title="AI Hedge Fund",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 st.title("AI Hedge Fund - Trading Analysis")
 
 # Input for tickers
