@@ -96,15 +96,15 @@ if st.button("Run Analysis"):
 
             if 'decisions' in result:
                 st.subheader("📊 Trading Decisions")
-
+                
                 for ticker, decision in result['decisions'].items():
-                    with st.container():
-                        cols = st.columns([1, 1, 1, 2])
-
-                        # Ticker symbol
-                        cols[0].markdown(f"### {ticker}")
-
-                        # Action with color coding
+                    with st.expander(f"Decision for {ticker}", expanded=True):
+                        cols = st.columns([2, 2, 3, 5])
+                        
+                        # Ticker symbol with larger font
+                        cols[0].markdown(f"<h2 style='margin-bottom:0px'>{ticker}</h2>", unsafe_allow_html=True)
+                        
+                        # Action with color coding and larger font
                         action = decision['action'].upper()
                         action_color = {
                             'BUY': 'green',
@@ -113,16 +113,25 @@ if st.button("Run Analysis"):
                             'SHORT': 'red',
                             'COVER': 'green'
                         }.get(action, 'white')
-                        cols[1].markdown(f"<h3 style='color: {action_color}'>{action}</h3>", unsafe_allow_html=True)
-
-                        # Quantity and confidence
-                        cols[2].markdown(f"**Quantity:** {decision['quantity']}<br>**Confidence:** {decision['confidence']:.1f}%", unsafe_allow_html=True)
-
-                        # Reasoning
+                        cols[1].markdown(f"<h2 style='color: {action_color}; margin-bottom:0px'>{action}</h2>", unsafe_allow_html=True)
+                        
+                        # Quantity and confidence with better formatting
+                        cols[2].markdown(
+                            f"<div style='padding:10px'>"
+                            f"<div style='font-size:1.2em'><b>Quantity:</b> {decision['quantity']}</div>"
+                            f"<div style='font-size:1.2em'><b>Confidence:</b> {decision['confidence']:.1f}%</div>"
+                            f"</div>",
+                            unsafe_allow_html=True
+                        )
+                        
+                        # Reasoning with better formatting
                         if 'reasoning' in decision:
-                            cols[3].markdown(f"*{decision['reasoning']}*")
-
-                        st.markdown("---")
+                            cols[3].markdown(
+                                f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; border-radius:5px'>"
+                                f"<i>{decision['reasoning']}</i>"
+                                f"</div>",
+                                unsafe_allow_html=True
+                            )
 
             if 'analyst_signals' in result:
                 st.subheader("🔍 Analyst Signals")
