@@ -131,34 +131,61 @@ if st.button("Run Analysis"):
 
         if 'analyst_signals' in result:
             st.subheader("🔍 Analyst Signals")
-
-            # Log analyst signals structure
-            st.write("Debug - Analyst Signals Structure:", result['analyst_signals'])
-
+            
             for analyst, signals in result['analyst_signals'].items():
-                st.write(f"Debug - Processing analyst: {analyst}")
-                st.write(f"Debug - Signals for {analyst}:", signals)
-
-                with st.expander(f"📈 {analyst.replace('_agent', '').title()} Analysis"):
+                analyst_name = analyst.replace('_agent', '').title()
+                with st.expander(f"📈 {analyst_name} Analysis", expanded=True):
                     for ticker, signal in signals.items():
-                        st.write(f"Debug - Processing ticker {ticker} with signal data:", signal)
-
                         try:
                             signal_type = signal.get('signal', 'UNKNOWN').upper()
                             confidence = signal.get('confidence', 0.0)
-                            st.write(f"Debug - Extracted signal type: {signal_type}, confidence: {confidence}")
-
+                            
                             # Color coding for signal types
                             signal_color = {
                                 'BULLISH': 'green',
                                 'BEARISH': 'red',
                                 'NEUTRAL': 'orange'
-                            }.get(signal_type, 'white')
-
-                            st.markdown(f"""
-                                **{ticker}**: <span style='color: {signal_color}'>{signal_type}</span>
-                                (Confidence: {confidence:.1f}%)
-                                """, unsafe_allow_html=True)
+                            }.get(signal_type, 'gray')
+                            
+                            # Create a container for each signal
+                            with st.container():
+                                cols = st.columns([2, 2, 3, 5])
+                                
+                                # Ticker symbol
+                                cols[0].markdown(f"<h3 style='margin:0'>{ticker}</h3>", unsafe_allow_html=True)
+                                
+                                # Signal type with color
+                                cols[1].markdown(
+                                    f"<h3 style='margin:0; color:{signal_color}'>{signal_type}</h3>",
+                                    unsafe_allow_html=True
+                                )
+                                
+                                # Confidence with progress bar
+                                cols[2].markdown("<div style='padding:10px'>", unsafe_allow_html=True)
+                                cols[2].progress(int(confidence))
+                                cols[2].markdown(f"<div style='text-align:center'>{confidence:.1f}%</div>", unsafe_allow_html=True)
+                                
+                                # Reasoning (if available)
+                                if 'reasoning' in signal:
+                                    reasoning = signal['reasoning']
+                                    if isinstance(reasoning, dict):
+                                        for key, value in reasoning.items():
+                                            if isinstance(value, dict):
+                                                cols[3].markdown(
+                                                    f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
+                                                    f"<b>{key.replace('_', ' ').title()}:</b> {value.get('details', '')}"
+                                                    f"</div>",
+                                                    unsafe_allow_html=True
+                                                )
+                                    else:
+                                        cols[3].markdown(
+                                            f"<div style='background-color:rgba(0,0,0,0.05); padding:10px; margin:5px; border-radius:5px'>"
+                                            f"{reasoning}"
+                                            f"</div>",
+                                            unsafe_allow_html=True
+                                        )
+                                
+                                st.markdown("<hr style='margin: 10px 0'>", unsafe_allow_html=True)
                         except Exception as e:
                             st.error(f"Error processing signal for {ticker}: {str(e)}")
                             st.write("Signal data:", signal)
