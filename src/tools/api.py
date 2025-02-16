@@ -32,7 +32,7 @@ def get_prices(ticker: str, start_date: str, end_date: str) -> list[Price]:
     # If not in cache or no data in range, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers["X-API-KEY"] = api_key
+        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
 
     url = f"https://api.financialdatasets.ai/prices/?ticker={ticker}&interval=day&interval_multiplier=1&start_date={start_date}&end_date={end_date}"
     response = requests.get(url, headers=headers)
@@ -69,7 +69,7 @@ def get_financial_metrics(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers["X-API-KEY"] = api_key
+        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
 
     url = f"https://api.financialdatasets.ai/financial-metrics/?ticker={ticker}&report_period_lte={end_date}&limit={limit}&period={period}"
     response = requests.get(url, headers=headers)
@@ -100,7 +100,7 @@ def search_line_items(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers["X-API-KEY"] = api_key
+        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
 
     url = "https://api.financialdatasets.ai/financials/search/line-items"
 
@@ -144,7 +144,7 @@ def get_insider_trades(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers["X-API-KEY"] = api_key
+        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
 
     all_trades = []
     current_end_date = end_date
@@ -207,7 +207,7 @@ def get_company_news(
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
-        headers["X-API-KEY"] = api_key
+        headers[84bfde05-ddc1-43f8-954b-33764ffbac37] = api_key
 
     all_news = []
     current_end_date = end_date
