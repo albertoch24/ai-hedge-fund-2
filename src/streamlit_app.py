@@ -63,22 +63,26 @@ with col1:
                             min_value=1, 
                             max_value=100, 
                             value=20,
-                            help="Maximum percentage of portfolio for any single position")
+                            help="Maximum percentage of portfolio for any single position",
+                            key="position_limit_1")
     stop_loss = st.slider("Stop Loss (%)", 
                         min_value=1, 
                         max_value=50, 
                         value=10,
-                        help="Percentage loss at which to trigger stop loss")
+                        help="Percentage loss at which to trigger stop loss",
+                        key="stop_loss_1")
 with col2:
     max_leverage = st.slider("Maximum Leverage", 
                            min_value=1.0, 
                            max_value=3.0, 
                            value=1.0, 
                            step=0.1,
-                           help="Maximum allowed leverage")
+                           help="Maximum allowed leverage",
+                           key="max_leverage_1")
     risk_tolerance = st.select_slider("Risk Tolerance",
                                    options=["Low", "Medium", "High"],
-                                   value="Medium")
+                                   value="Medium",
+                                   key="risk_tolerance_1")
 
 # Portfolio Manager Settings
 st.markdown("---")
@@ -89,17 +93,21 @@ with col1:
                                   min_value=1, 
                                   max_value=20, 
                                   value=5,
-                                  help="Percentage deviation to trigger rebalancing")
+                                  help="Percentage deviation to trigger rebalancing",
+                                  key="rebalance_threshold_1")
     min_position_size = st.number_input("Minimum Position Size ($)", 
                                       min_value=100, 
-                                      value=1000)
+                                      value=1000,
+                                      key="min_position_size_1")
 with col2:
     max_positions = st.slider("Maximum Number of Positions", 
                             min_value=1, 
                             max_value=20, 
-                            value=10)
+                            value=10,
+                            key="max_positions_1")
     position_sizing = st.selectbox("Position Sizing Strategy",
-                                 options=["Equal Weight", "Risk Parity", "Kelly Criterion"])
+                                 options=["Equal Weight", "Risk Parity", "Kelly Criterion"],
+                                 key="position_sizing_1")
 
 if st.button("Run Analysis"):
     st.subheader("Processing Logs")
