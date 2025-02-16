@@ -43,6 +43,8 @@ def parse_hedge_fund_response(response):
 
 
 ##### Run the Hedge Fund #####
+from utils.analysts import create_workflow
+
 def run_hedge_fund(
     tickers: list[str],
     start_date: str,
@@ -57,12 +59,15 @@ def run_hedge_fund(
     progress.start()
 
     try:
-        # Create a new workflow if analysts are customized
-        if selected_analysts:
-            workflow = create_workflow(selected_analysts)
-            agent = workflow.compile()
-        else:
-            agent = app
+        # Create workflow with default or custom analysts
+        workflow = create_workflow(selected_analysts if selected_analysts else [
+            "warren_buffett",
+            "bill_ackman",
+            "technicals",
+            "fundamentals",
+            "sentiment"
+        ])
+        agent = workflow.compile()
 
         final_state = agent.invoke(
             {
