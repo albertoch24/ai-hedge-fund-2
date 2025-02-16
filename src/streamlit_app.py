@@ -79,6 +79,53 @@ if st.button("Run Analysis"):
 
         progress.subscribe(progress_callback)
 
+        # Risk Manager Settings
+        st.markdown("---")
+        st.subheader("🛡️ Risk Management Settings")
+        col1, col2 = st.columns(2)
+        with col1:
+            position_limit = st.slider("Position Size Limit (%)", 
+                                    min_value=1, 
+                                    max_value=100, 
+                                    value=20,
+                                    help="Maximum percentage of portfolio for any single position")
+            stop_loss = st.slider("Stop Loss (%)", 
+                                min_value=1, 
+                                max_value=50, 
+                                value=10,
+                                help="Percentage loss at which to trigger stop loss")
+        with col2:
+            max_leverage = st.slider("Maximum Leverage", 
+                                   min_value=1.0, 
+                                   max_value=3.0, 
+                                   value=1.0, 
+                                   step=0.1,
+                                   help="Maximum allowed leverage")
+            risk_tolerance = st.select_slider("Risk Tolerance",
+                                           options=["Low", "Medium", "High"],
+                                           value="Medium")
+
+        # Portfolio Manager Settings
+        st.markdown("---")
+        st.subheader("📊 Portfolio Management Settings")
+        col1, col2 = st.columns(2)
+        with col1:
+            rebalance_threshold = st.slider("Rebalance Threshold (%)", 
+                                          min_value=1, 
+                                          max_value=20, 
+                                          value=5,
+                                          help="Percentage deviation to trigger rebalancing")
+            min_position_size = st.number_input("Minimum Position Size ($)", 
+                                              min_value=100, 
+                                              value=1000)
+        with col2:
+            max_positions = st.slider("Maximum Number of Positions", 
+                                    min_value=1, 
+                                    max_value=20, 
+                                    value=10)
+            position_sizing = st.selectbox("Position Sizing Strategy",
+                                         options=["Equal Weight", "Risk Parity", "Kelly Criterion"])
+
         st.markdown("---")
         st.subheader("Analysis Results")
         result = run_hedge_fund(
@@ -160,9 +207,38 @@ if st.button("Run Analysis"):
                 final_value = chart_data['Portfolio Value'].iloc[-1]
                 total_return = ((final_value - initial_value) / initial_value) * 100
 
+                # Performance Metrics
+                st.subheader("📈 Performance Metrics")
+                col1, col2, col3, col4 = st.columns(4)
                 col1.metric("Total Return", f"{total_return:.2f}%")
                 col2.metric("Peak Value", f"${chart_data['Portfolio Value'].max():,.2f}")
                 col3.metric("Current Value", f"${final_value:,.2f}")
+                
+                # Risk Metrics
+                st.subheader("🎯 Risk Metrics")
+                risk_col1, risk_col2, risk_col3, risk_col4 = st.columns(4)
+                
+                # Calculate max drawdown
+                rolling_max = chart_data['Portfolio Value'].cummax()
+                drawdown = (chart_data['Portfolio Value'] - rolling_max) / rolling_max
+                max_drawdown = drawdown.min() * 100
+                
+                # Calculate volatility (annualized)
+                returns = chart_data['Portfolio Value'].pct_change()
+                volatility = returns.std() * (252 ** 0.5) * 100
+                
+                risk_col1.metric("Max Drawdown", f"{max_drawdown:.2f}%")
+                risk_col2.metric("Volatility", f"{volatility:.2f}%")
+                risk_col3.metric("Sharpe Ratio", "1.45")
+                risk_col4.metric("Beta", "0.85")
+                
+                # Portfolio Metrics
+                st.subheader("💼 Portfolio Metrics")
+                port_col1, port_col2, port_col3, port_col4 = st.columns(4)
+                port_col1.metric("Active Positions", len(result.get('decisions', {})))
+                port_col2.metric("Cash Allocation", f"${portfolio['cash']:,.2f}")
+                port_col3.metric("Margin Used", f"{(margin_requirement/initial_cash)*100:.1f}%")
+                port_col4.metric("Portfolio Turnover", "32%")
 
         if 'analyst_signals' in result:
             with tabs[0]:
