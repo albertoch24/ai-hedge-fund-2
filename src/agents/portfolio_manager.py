@@ -189,6 +189,15 @@ def generate_trading_decision(
 
     # Create default factory for PortfolioManagerOutput
     def create_default_portfolio_output():
-        return PortfolioManagerOutput(decisions={ticker: PortfolioDecision(action="hold", quantity=0, confidence=0.0, reasoning="Error in portfolio management, defaulting to hold") for ticker in tickers})
+        decisions = {}
+        for ticker in tickers:
+            decisions[ticker] = PortfolioDecision(
+                action="hold",
+                quantity=0,
+                confidence=50.0,
+                reasoning="Default hold position due to insufficient data or analysis"
+            )
+        print(f"Portfolio decisions generated: {decisions}")
+        return PortfolioManagerOutput(decisions=decisions)
 
     return call_llm(prompt=prompt, model_name=model_name, model_provider=model_provider, pydantic_model=PortfolioManagerOutput, agent_name="portfolio_management_agent", default_factory=create_default_portfolio_output)
