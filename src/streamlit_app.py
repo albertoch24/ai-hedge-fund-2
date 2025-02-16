@@ -334,3 +334,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    st.set_option('server.address', '0.0.0.0')
+    st.set_option('server.port', 8501)
